@@ -1,37 +1,66 @@
 LOGIC_PROMPT = """
 Analyze the following code diff for logical errors, edge cases, off-by-one errors, and algorithmic efficiency.
-Focus strictly on the logic, not style.
+
+IMPORTANT RULES:
+- ONLY analyze what is explicitly present in the diff
+- DO NOT assume how variables are used outside this snippet
+- DO NOT assume user input unless clearly shown
+- If context is missing, say: "Insufficient context to determine"
+- Avoid speculation
 
 CODE DIFF:
 {diff}
 """
 
 CONTEXT_PROMPT = """
-Analyze this code diff for architectural consistency, potential side effects on other components, and dependency issues.
-Assume this is part of a larger, scalable system.
+Analyze this code diff for architectural consistency, potential side effects, and dependency issues.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the given diff
+- DO NOT assume full project structure
+- If unsure, explicitly say "Insufficient context"
+- Avoid generic statements
 
 CODE DIFF:
 {diff}
 """
 
 SECURITY_PROMPT = """
-Review this code diff specifically for security vulnerabilities (e.g., OWASP Top 10) and severe code style violations that impede readability.
+Review this code diff for security vulnerabilities.
+
+IMPORTANT RULES:
+- ONLY report vulnerabilities that are clearly exploitable from this diff
+- DO NOT assume user input unless explicitly visible
+- If a vulnerability depends on missing context, label it as:
+  "⚠️ Potential Issue (Needs More Context)"
+- Avoid generic OWASP warnings without evidence
 
 CODE DIFF:
 {diff}
 """
 
 SYNTHESIS_PROMPT = """
-You are the Lead Code Reviewer. Summarize these three expert reviews into one cohesive, structured Markdown report.
-Filter out redundant points. If the experts disagree, note the discrepancy.
+You are the Lead Code Reviewer.
+
+Combine the expert reviews into a single structured Markdown report.
+
+IMPORTANT RULES:
+- Remove speculative or weak claims
+- Clearly separate:
+  - Confirmed Issues
+  - ⚠️ Potential Issues (Needs More Context)
+- Do NOT exaggerate severity
+- Prefer accuracy over completeness
 
 LOGIC REVIEW: {logic}
 CONTEXT REVIEW: {context}
 SECURITY REVIEW: {security}
 
-The final output MUST be formatted as a Markdown comment suitable for GitHub, including:
+Format:
+
 ## 📊 Executive Summary
-## 🚨 Critical Issues
+## 🚨 Confirmed Issues
+## ⚠️ Potential Issues (Needs More Context)
 ## 🛠️ Suggested Improvements
 ## 🔒 Security Audit
 """
